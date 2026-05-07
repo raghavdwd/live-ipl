@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PROXY // TERMINAL</title>
-  
+
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22%23ff3e00%22>📡</text></svg>">
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -28,44 +30,54 @@
       }
     }
   </script>
-  
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
+
   <!-- Custom Styles (minimal, mostly just texture/noise) -->
   <link rel="stylesheet" href="styles.css">
-  
+
   <!-- HLS.js -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
-<body class="bg-surface text-zinc-300 font-mono min-h-screen overflow-hidden selection:bg-accent selection:text-white relative">
-  
+
+<body
+  class="bg-surface text-zinc-300 font-mono min-h-screen overflow-hidden selection:bg-accent selection:text-white relative">
+
   <!-- Noise Overlay -->
-  <div class="fixed inset-0 pointer-events-none z-50 opacity-[0.03] mix-blend-screen" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"></div>
+  <div class="fixed inset-0 pointer-events-none z-50 opacity-[0.03] mix-blend-screen"
+    style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');">
+  </div>
 
   <!-- Scanline Effect -->
-  <div class="fixed inset-0 pointer-events-none z-40 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px]"></div>
+  <div
+    class="fixed inset-0 pointer-events-none z-40 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px]">
+  </div>
 
   <div class="max-w-[1600px] mx-auto h-screen p-4 md:p-8 flex flex-col relative z-10">
-    
+
     <!-- Top Bar -->
-    <header class="flex flex-col md:flex-row justify-between items-start md:items-end border-b-2 border-zinc-800 pb-4 mb-6">
+    <header
+      class="flex flex-col md:flex-row justify-between items-start md:items-end border-b-2 border-zinc-800 pb-4 mb-6">
       <div class="flex flex-col">
         <div class="text-xs text-accent tracking-[0.2em] uppercase mb-1">Secure Protocol</div>
         <h1 class="text-3xl md:text-5xl font-bold uppercase tracking-tighter text-white">
           SYS.PROXY<span class="text-zinc-600">_</span>
         </h1>
       </div>
-      
-      <div class="mt-4 md:mt-0 flex items-center gap-4 bg-panel border border-zinc-800 px-4 py-2 rounded-sm shadow-[4px_4px_0px_0px_rgba(255,62,0,0.2)]">
+
+      <div
+        class="mt-4 md:mt-0 flex items-center gap-4 bg-panel border border-zinc-800 px-4 py-2 rounded-sm shadow-[4px_4px_0px_0px_rgba(255,62,0,0.2)]">
         <div class="flex flex-col items-end mr-2">
           <span class="text-[10px] text-zinc-500 uppercase">Status</span>
           <span id="statusText" class="text-sm font-bold text-zinc-300 uppercase">Awaiting Stream</span>
         </div>
         <div class="relative flex h-3 w-3">
-          <span id="statusDotPing" class="animate-ping absolute inline-flex h-full w-full rounded-none bg-accent opacity-75 hidden"></span>
+          <span id="statusDotPing"
+            class="animate-ping absolute inline-flex h-full w-full rounded-none bg-accent opacity-75 hidden"></span>
           <span id="statusDot" class="relative inline-flex rounded-none h-3 w-3 bg-zinc-600"></span>
         </div>
       </div>
@@ -73,40 +85,54 @@
 
     <!-- Main Player Area -->
     <main class="flex-grow flex flex-col lg:flex-row gap-6 h-full min-h-0">
-      
+
       <!-- Video Container -->
-      <div class="flex-grow border-2 border-zinc-800 bg-black relative group shadow-[8px_8px_0px_0px_rgba(20,20,22,1)]" id="videoContainer">
-        
+      <div class="flex-grow border-2 border-zinc-800 bg-black relative group shadow-[8px_8px_0px_0px_rgba(20,20,22,1)]"
+        id="videoContainer">
+
         <video id="videoPlayer" playsinline class="w-full h-full object-contain"></video>
-        
+
         <!-- Loading overlay -->
-        <div id="loadingOverlay" class="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col justify-center items-center z-20 transition-opacity duration-300">
+        <div id="loadingOverlay"
+          class="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col justify-center items-center z-20 transition-opacity duration-300">
           <div class="w-16 h-16 border-4 border-zinc-800 border-t-accent animate-spin rounded-none mb-4"></div>
           <p class="text-accent text-sm tracking-widest uppercase animate-pulse">Establishing Connection...</p>
         </div>
 
         <!-- Controls Overlay -->
-        <div class="controls-overlay absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-6 z-30">
-          
+        <div
+          class="controls-overlay absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-6 z-30">
+
           <div class="flex justify-between items-end border-t border-zinc-800 pt-4">
             <div class="flex items-center gap-2 md:gap-4">
-              <button id="playPauseBtn" class="bg-white text-black hover:bg-accent hover:text-white transition-colors p-3 w-12 h-12 flex items-center justify-center rounded-none shadow-[2px_2px_0px_0px_rgba(255,62,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(255,62,0,1)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none duration-200">
-                <svg viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M8 5v14l11-7z"/></svg>
-              </button>
-              
-              <button id="muteBtn" class="bg-panel border border-zinc-700 hover:border-zinc-500 text-white transition-colors p-3 w-12 h-12 flex items-center justify-center rounded-none">
-                <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+              <button id="playPauseBtn"
+                class="bg-white text-black hover:bg-accent hover:text-white transition-colors p-3 w-12 h-12 flex items-center justify-center rounded-none shadow-[2px_2px_0px_0px_rgba(255,62,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(255,62,0,1)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none duration-200">
+                <svg viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
               </button>
 
-              <div class="hidden md:flex items-center gap-2 ml-4 px-3 py-1 bg-accent/20 border border-accent/50 text-accent text-xs font-bold uppercase tracking-widest">
+              <button id="muteBtn"
+                class="bg-panel border border-zinc-700 hover:border-zinc-500 text-white transition-colors p-3 w-12 h-12 flex items-center justify-center rounded-none">
+                <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                  <path
+                    d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                </svg>
+              </button>
+
+              <div
+                class="hidden md:flex items-center gap-2 ml-4 px-3 py-1 bg-accent/20 border border-accent/50 text-accent text-xs font-bold uppercase tracking-widest">
                 <span class="w-2 h-2 bg-accent rounded-full animate-pulse"></span>
                 Live Transmission
               </div>
             </div>
 
             <div class="flex items-center">
-              <button id="fullscreenBtn" class="bg-panel border border-zinc-700 hover:border-zinc-500 text-white transition-colors p-3 w-12 h-12 flex items-center justify-center rounded-none">
-                <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+              <button id="fullscreenBtn"
+                class="bg-panel border border-zinc-700 hover:border-zinc-500 text-white transition-colors p-3 w-12 h-12 flex items-center justify-center rounded-none">
+                <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                  <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+                </svg>
               </button>
             </div>
           </div>
@@ -115,15 +141,19 @@
         <!-- Frame Corners -->
         <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-accent pointer-events-none"></div>
         <div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-accent pointer-events-none"></div>
-        <div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-accent pointer-events-none z-40"></div>
-        <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-accent pointer-events-none z-40"></div>
+        <div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-accent pointer-events-none z-40">
+        </div>
+        <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-accent pointer-events-none z-40">
+        </div>
 
       </div>
 
       <!-- Info Panel (Right side on desktop) -->
-      <div class="lg:w-80 border-2 border-zinc-800 bg-panel p-6 flex flex-col shadow-[8px_8px_0px_0px_rgba(20,20,22,1)]">
-        <h3 class="text-accent uppercase tracking-widest text-xs font-bold mb-4 border-b border-zinc-800 pb-2">Diagnostic Data</h3>
-        
+      <div
+        class="lg:w-80 border-2 border-zinc-800 bg-panel p-6 flex flex-col shadow-[8px_8px_0px_0px_rgba(20,20,22,1)]">
+        <h3 class="text-accent uppercase tracking-widest text-xs font-bold mb-4 border-b border-zinc-800 pb-2">
+          Diagnostic Data</h3>
+
         <div class="flex flex-col gap-4 text-xs">
           <div class="flex justify-between border-b border-zinc-800/50 pb-2">
             <span class="text-zinc-500">Codec</span>
@@ -131,7 +161,7 @@
           </div>
           <div class="flex justify-between border-b border-zinc-800/50 pb-2">
             <span class="text-zinc-500">Node</span>
-            <span class="text-zinc-300">Localhost:3000</span>
+            <span class="text-zinc-300" id="node"></span>
           </div>
           <div class="flex justify-between border-b border-zinc-800/50 pb-2">
             <span class="text-zinc-500">Latency</span>
@@ -153,7 +183,16 @@
 
     </main>
   </div>
-  
+
   <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Note: window.location.hostname only returns the host (e.g. 'localhost'), not the port.
+      // So 'localhost' instead of 'localhost:3000'
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      document.getElementById('node').textContent = isLocalhost ? 'DEV' : 'V0.1.0';
+    });
+  </script>
 </body>
+
 </html>
