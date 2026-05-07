@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Controls auto hide
+  // Controls auto hide (mouse)
   let timeout;
   videoContainer.addEventListener('mousemove', () => {
     videoContainer.classList.add('active-controls');
@@ -166,6 +166,24 @@ document.addEventListener('DOMContentLoaded', () => {
   videoContainer.addEventListener('mouseleave', () => {
     videoContainer.classList.remove('active-controls');
   });
+
+  /**
+   * Toggle controls visibility on touch for mobile devices
+  **/
+  videoContainer.addEventListener('touchstart', (e) => {
+    // Don't toggle if user tapped a control button
+    if (e.target.closest('button')) return;
+    
+    if (videoContainer.classList.contains('active-controls')) {
+      videoContainer.classList.remove('active-controls');
+    } else {
+      videoContainer.classList.add('active-controls');
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        videoContainer.classList.remove('active-controls');
+      }, 4000);
+    }
+  }, { passive: true });
 
   // Start initialization
   initPlayer();
