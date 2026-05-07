@@ -24,7 +24,7 @@ This proxy handles fetching secured playlists, rewriting internal segment URIs, 
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/raghavdwd/live-ipl.git
    cd live-ipl
    ```
 
