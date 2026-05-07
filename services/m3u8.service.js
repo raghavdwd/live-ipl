@@ -40,7 +40,7 @@ const fetchAndRewritePlaylist = async (targetUrl, host) => {
   }
   
   const content = await response.text();
-  const lines = content.split('\\n');
+  const lines = content.split('\n');
   
   const rewrittenLines = lines.map(line => {
     const trimmedLine = line.trim();
@@ -73,7 +73,7 @@ const fetchAndRewritePlaylist = async (targetUrl, host) => {
     return `${proxyEndpoint}?url=${encodedUrl}`;
   });
 
-  return rewrittenLines.join('\\n');
+  return rewrittenLines.join('\n');
 };
 
 module.exports = { fetchAndRewritePlaylist };
