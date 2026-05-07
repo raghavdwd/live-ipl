@@ -56,8 +56,8 @@ const fetchAndRewritePlaylist = async (targetUrl, host) => {
           const isPlaylist = absoluteUrl.includes('.m3u8');
           const proxyEndpoint = isPlaylist ? '/api/playlist' : '/api/segment';
           const encodedUrl = encodeURIComponent(absoluteUrl);
-          // Use HTTP, assume HTTPS if in production usually, but for local use http
-          return `URI="http://${host}${proxyEndpoint}?url=${encodedUrl}"`;
+          // Use relative paths to completely avoid HTTPS/HTTP mixed content issues
+          return `URI="${proxyEndpoint}?url=${encodedUrl}"`;
         });
       }
       return line; // Other tags remain unchanged
@@ -69,7 +69,8 @@ const fetchAndRewritePlaylist = async (targetUrl, host) => {
     const proxyEndpoint = isPlaylist ? '/api/playlist' : '/api/segment';
     const encodedUrl = encodeURIComponent(absoluteUrl);
     
-    return `http://${host}${proxyEndpoint}?url=${encodedUrl}`;
+    // Use relative paths
+    return `${proxyEndpoint}?url=${encodedUrl}`;
   });
 
   return rewrittenLines.join('\\n');
