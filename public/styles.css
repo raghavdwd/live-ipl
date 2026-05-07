@@ -1,0 +1,26 @@
+/* Custom styles supplementing Tailwind */
+.active-controls .controls-overlay {
+  opacity: 1 !important;
+}
+
+/* We don't need much here because Tailwind handles almost everything. 
+   Just a minor glitch effect for hover states if we wanted it. */
+   
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes glitch {
+  0% { transform: translate(0) }
+  20% { transform: translate(-2px, 2px) }
+  40% { transform: translate(-2px, -2px) }
+  60% { transform: translate(2px, 2px) }
+  80% { transform: translate(2px, -2px) }
+  100% { transform: translate(0) }
+}
+
+.glitch-hover:hover {
+  animation: glitch 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+  color: #ff3e00;
+}
